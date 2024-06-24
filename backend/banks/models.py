@@ -11,7 +11,7 @@ class Bank(models.Model):
     tel = models.CharField(max_length=20,default="")
     
     def save(self, *args, **kwargs):
-        match = re.search(r'(.*?)(銀行|信用合作社|證券|公司)(股份有限公司)?(.*)', self.name)
+        match = re.search(r'(.*?)(銀行|信用合作社|證券|公司|商銀)(股份有限公司)?(.*)', self.name)
         if match:
             self.headOffice = match.group(1) + match.group(2)
             self.branchOffice = re.sub(r'股份有限公司|有限公司|集團', '', match.group(4)).strip()

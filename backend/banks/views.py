@@ -1,9 +1,10 @@
 from io import StringIO
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
-from banks.models import Bank
+from .models import Bank
 import pandas as pd
 import requests
+
 
 
 @require_GET
@@ -35,3 +36,14 @@ def get_data(request):
         return JsonResponse(data, safe=False)
     else:
         return JsonResponse({"error": "Failed to retrieve data"}, status=response.status_code)
+    
+@require_GET
+def get_head_offices(request):
+    data = list(Bank.objects.values("headOfficeCode","headOffice").order_by("headOfficeCode").distinct())
+    return JsonResponse(data, safe=False)
+
+@require_GET
+def get_branches(request):
+    head_office = request.GET.get('head_office')
+    branches = Bank.objects.filter(headOffice=head_office).exclude(branchOffice="").values('id', 'branchOffice')
+    return JsonResponse(list(branches), safe=False)
