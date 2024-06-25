@@ -27,13 +27,20 @@
             </div>
         </section>
     </div>
+    <section v-if="selectedBranchDetails">
+        <Detail :branch="selectedBranchDetails" @resetSearch="resetSearch"/>
+    </section>
 </template>
 
 
 <script>
 import axios from 'axios';
+import Detail from './Detail.vue';
 
 export default {
+  components: {
+    Detail  
+  },
   data() {
     return {
       openHeadOffice: false,
@@ -42,6 +49,7 @@ export default {
       branches: [],
       selectedHeadOffice: null,
       selectedBranch: null,
+      selectedBranchDetails: null,
     }
   },
   methods: {
@@ -61,7 +69,7 @@ export default {
           console.error("沒有抓到總行", error);
         });
     },
-    selectHeadOffice(headOffice,headOfficeCode) {
+    selectHeadOffice(headOffice, headOfficeCode) {
       this.selectedHeadOffice = headOffice;
       this.selectedHeadOfficeCode = headOfficeCode;
       this.openHeadOffice = false;
@@ -84,7 +92,26 @@ export default {
     selectBranch(branch) {
       this.selectedBranch = branch;
       this.openBranch = false;
+      this.fetchBranchDetails(branch.id);
     },
+    fetchBranchDetails(branchId) {
+      axios.get(`http://localhost:8000/api/v1/banks/detail/${branchId}/`)
+        .then(response => {
+          this.selectedBranchDetails = response.data;
+          console.log(this.selectedBranchDetails);
+        })
+        .catch(error => {
+          console.error("沒有抓到詳細資料", error);
+        });
+    },
+    resetSearch() {
+      this.selectedHeadOffice = null;
+      this.selectedBranch = null;
+      this.selectedBranchDetails = null;
+      this.headOffices = [];
+      this.branches = [];
+      this.fetchHeadOffices();
+    }
   },
   mounted() {
     this.fetchHeadOffices();

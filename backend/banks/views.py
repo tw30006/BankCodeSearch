@@ -47,3 +47,19 @@ def get_branches(request):
     head_office = request.GET.get('head_office')
     branches = Bank.objects.filter(headOffice=head_office).exclude(branchOffice="").values('id', 'branchOffice')
     return JsonResponse(list(branches), safe=False)
+
+@require_GET
+def detail(request, pk):
+    try:
+        branch = Bank.objects.get(id=pk)
+        data = {
+            'headOffice': branch.headOffice,
+            'headOfficeCode': branch.headOfficeCode,
+            'branchOffice': branch.branchOffice,
+            'branchOfficeCode': branch.branchOfficeCode,
+            'address': branch.address,
+            'tel': branch.tel
+        }
+        return JsonResponse(data)
+    except Bank.DoesNotExist:
+        return JsonResponse({'error': 'Branch not found'}, status=404)
