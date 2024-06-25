@@ -3,13 +3,13 @@
         <section class="mx-2">
             <label>銀行名稱</label>
             <div class="relative w-[16rem]">
-                <button @click="toggleHeadOffice" :class="(openHeadOffice) && 'ring-blue-600'" class="flex w-full items-center justify-between rounded bg-white p-2 ring-1 ring-gray-300">
-                    <span :class="{'text-gray-300': !selectedHeadOffice, 'text-gray-700': selectedHeadOffice}">{{ selectedHeadOffice ? selectedHeadOfficeCode +" "+ selectedHeadOffice.headOffice : '請輸入關鍵字或銀行代碼...' }}</span>
-                    <font-awesome-icon :icon="['fas', 'chevron-down']" />
-                </button>
+                <input v-model="search" @click="toggleHeadOffice(true)" @focus="openHeadOffice" @input="filterHeadOffices" class="flex w-full items-center justify-between rounded bg-white p-2 ring-1 ring-gray-300 " placeholder="請輸入關鍵字或銀行代碼..." :icon="['fas', 'chevron-down']">
+                    <!-- <span :class="{'text-gray-300': !selectedHeadOffice, 'text-gray-700': selectedHeadOffice}">{{ selectedHeadOffice ? selectedHeadOfficeCode +" "+ selectedHeadOffice.headOffice : '' }}</span>
+                    <font-awesome-icon :icon="['fas', 'chevron-down']" /> -->
+                
 
-                <ul v-if="openHeadOffice" class="z-2 absolute mt-1 w-full rounded bg-gray-50 ring-1 ring-gray-300 max-h-60 overflow-y-auto">
-                    <li v-for="headOffice in headOffices" :key="headOffice.id" @click="selectHeadOffice(headOffice, headOffice.headOfficeCode)" class="cursor-pointer p-2 hover:bg-gray-200">{{ headOffice.headOfficeCode }} {{ headOffice.headOffice }}</li>
+                <ul v-if="openHeadOffice" v-show="filteredHeadOffices" class="z-2 absolute mt-1 w-full rounded bg-gray-50 ring-1 ring-gray-300 max-h-60 overflow-y-auto">
+                    <li v-for="headOffice in filteredHeadOffices" :key="headOffice.id" @click="selectHeadOffice(headOffice, headOffice.headOfficeCode)" class="cursor-pointer p-2 hover:bg-gray-200">{{ headOffice.headOfficeCode }} {{ headOffice.headOffice }}</li>
                 </ul>
             </div>
             <div class="text-gray-500 text-sm">可使用下拉選單或直接輸入關鍵字查詢</div>
@@ -50,11 +50,13 @@ export default {
       selectedHeadOffice: null,
       selectedBranch: null,
       selectedBranchDetails: null,
+      filteredHeadOffices: [],
+      search: '',
     }
   },
   methods: {
-    toggleHeadOffice() {
-      this.openHeadOffice = !this.openHeadOffice;
+    toggleHeadOffice(state) {
+      this.openHeadOffice = state;
     },
     toggleBranch() {
       this.openBranch = !this.openBranch;
@@ -63,11 +65,17 @@ export default {
       axios.get('http://localhost:8000/api/v1/banks/head_offices/')
         .then(response => {
           this.headOffices = response.data;
+          this.filteredHeadOffices = response.data;
           console.log(this.headOffices);
         })
         .catch(error => {
           console.error("沒有抓到總行", error);
         });
+    },
+    filterHeadOffices() {
+        this.filteredHeadOffices = this.headOffices.filter((h) => {
+            return (`${h.headOffice} + ${h.headOfficeCode}`).includes(this.search);
+        })
     },
     selectHeadOffice(headOffice, headOfficeCode) {
       this.selectedHeadOffice = headOffice;
@@ -111,6 +119,8 @@ export default {
       this.headOffices = [];
       this.branches = [];
       this.fetchHeadOffices();
+      this.filterHeadOffices();
+      this.search ="";
     }
   },
   mounted() {

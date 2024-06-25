@@ -7,7 +7,7 @@
         </div>
         <div class="flex items-center">
             <p class="text-lg me-2">分行代碼：{{ branch.branchOfficeCode }}</p>
-            <button class="sm-btn">複製代碼</button>
+            <button class="sm-btn" @click="copyCode">{{ codeButton }}</button>
         </div>
         <p class="text-lg">地址：{{ branch.address }}</p>
         <div class="flex justify-between">
@@ -21,7 +21,7 @@
     </div>
     <div class="flex justify-center my-2">
         <button class="md-btn me-5" @click="resetSearch">重新查詢</button>
-        <button class="md-btn-full" @click="copyPageLink">複製此頁面連結</button>
+        <button class="md-btn-full" @click="copyLink">{{ linkButton }}</button>
     </div>
 </template>
 
@@ -35,18 +35,36 @@ export default {
       default: () => ({})
     }
   },
+  data() {
+    return {
+        codeButton: '複製代碼',
+        linkButton: '複製此頁面連結',
+    };
+  },
   methods: {
-    copyCode(code) {
-      navigator.clipboard.writeText(code).then(() => {
-        alert('分行代碼已複製');
+    copyCode() {
+      const code = this.branch.branchOfficeCode;
+      navigator.clipboard.writeText(code)
+      .then(() => {
+        this.codeButton = '已複製';
+        setTimeout(()=>{
+            this.codeButton = '複製代碼'
+        },500)
       });
     },
+    
     resetSearch() {
       this.$emit('resetSearch');
     },
-    copyPageLink() {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('頁面連結已複製');
+    copyLink() {
+      navigator.clipboard.writeText(window.location.href)
+      .then(() => {
+        this.linkButton = '已複製';
+        console.log(this.isCopied);
+        setTimeout(()=>{
+            this.linkButton = '複製此頁面連結';
+        },500)
+        console.log(window.location.href);
       });
     }
   }
