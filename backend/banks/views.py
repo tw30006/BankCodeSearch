@@ -1,5 +1,6 @@
 from io import StringIO
 from django.views.decorators.http import require_GET
+from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Bank
 import pandas as pd
@@ -63,3 +64,11 @@ def detail(request, pk):
         return JsonResponse(data)
     except Bank.DoesNotExist:
         return JsonResponse({'error': 'Branch not found'}, status=404)
+    
+def detail_view(request, headOfficeCode, branchOfficeCode, headOffice, branchOffice):
+    return render(request, 'detail.html', {
+        'headOfficeCode': headOfficeCode,
+        'branchOfficeCode': branchOfficeCode,
+        'headOffice': headOffice,
+        'branchOffice': branchOffice
+    })

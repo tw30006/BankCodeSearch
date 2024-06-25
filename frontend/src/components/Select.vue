@@ -3,11 +3,13 @@
         <section class="mx-2">
             <label>銀行名稱</label>
             <div class="relative w-[16rem]">
-                <input v-model="search" @click="toggleHeadOffice(true)" @focus="openHeadOffice" @input="filterHeadOffices" class="flex w-full items-center justify-between rounded bg-white p-2 ring-1 ring-gray-300 " placeholder="請輸入關鍵字或銀行代碼..." :icon="['fas', 'chevron-down']">
-                    <!-- <span :class="{'text-gray-300': !selectedHeadOffice, 'text-gray-700': selectedHeadOffice}">{{ selectedHeadOffice ? selectedHeadOfficeCode +" "+ selectedHeadOffice.headOffice : '' }}</span>
-                    <font-awesome-icon :icon="['fas', 'chevron-down']" /> -->
-                
-
+              <div class="flex w-full items-center justify-between rounded bg-white p-2 ring-1 ring-gray-300">
+                <input v-model="search" @click="toggleHeadOffice(true)" @focus="openHeadOffice" 
+                @input="filterHeadOffices" 
+                class="w-full outline-none" 
+                placeholder="請輸入關鍵字或銀行代碼..." />
+                <font-awesome-icon :icon="['fas', 'chevron-down']" />
+              </div>
                 <ul v-if="openHeadOffice" v-show="filteredHeadOffices" class="z-2 absolute mt-1 w-full rounded bg-gray-50 ring-1 ring-gray-300 max-h-60 overflow-y-auto">
                     <li v-for="headOffice in filteredHeadOffices" :key="headOffice.id" @click="selectHeadOffice(headOffice, headOffice.headOfficeCode)" class="cursor-pointer p-2 hover:bg-gray-200">{{ headOffice.headOfficeCode }} {{ headOffice.headOffice }}</li>
                 </ul>
@@ -17,7 +19,7 @@
         <section>
             <label>分行名稱</label>
             <div class="relative w-[10rem]">
-                <button @click="toggleBranch" :class="(openBranch) && 'ring-blue-600'" class="flex w-full items-center justify-between rounded bg-white p-2 ring-1 ring-gray-300">
+                <button @click="toggleBranch" :disabled="!selectedHeadOffice" :class="(openBranch) && 'ring-blue-600'" class="flex w-full items-center justify-between rounded bg-white p-2 ring-1 ring-gray-300">
                     <span :class="{'text-gray-300': !selectedBranch, 'text-gray-700': selectedBranch}">{{ selectedBranch ? selectedBranch.branchOffice : '請選擇分行名稱' }}</span>
                     <font-awesome-icon :icon="['fas', 'chevron-down']" />
                 </button>
@@ -73,13 +75,17 @@ export default {
         });
     },
     filterHeadOffices() {
-        this.filteredHeadOffices = this.headOffices.filter((h) => {
-            return (`${h.headOffice} + ${h.headOfficeCode}`).includes(this.search);
-        })
+      this.filteredHeadOffices = this.headOffices.filter((h) => {
+        return (
+          h.headOffice.includes(this.search) ||
+          h.headOfficeCode.includes(this.search)
+        );
+      });
     },
     selectHeadOffice(headOffice, headOfficeCode) {
       this.selectedHeadOffice = headOffice;
       this.selectedHeadOfficeCode = headOfficeCode;
+      this.search = `${headOffice.headOfficeCode} ${headOffice.headOffice}`;
       this.openHeadOffice = false;
       this.fetchBranches();
     },

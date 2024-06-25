@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分行詳情</title>
+    <script type="module" src="{% static 'path/to/your/vite/bundle.js' %}" defer></script>
+</head>
+<body>
+    <div id="app">
+        <header class="text-5xl bg-sky-700/25 text-center p-5">分行詳情</header>
+        <detail-component 
+            :head-office-code="'{{ headOfficeCode }}'"
+            :branch-office-code="'{{ branchOfficeCode }}'"
+            :head-office="'{{ headOffice }}'"
+            :branch-office="'{{ branchOffice }}'"></detail-component>
+        <footer class="text-center text-sm">powered by <a href="https://5xcampus.com/">5xCampus</a></footer>
+    </div>
+</body>
+</html>
