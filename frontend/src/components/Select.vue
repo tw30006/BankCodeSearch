@@ -113,6 +113,16 @@ export default {
         .then(response => {
           this.selectedBranchDetails = response.data;
           console.log(this.selectedBranchDetails);
+          console.log(this.selectedBranchDetails.headOfficeCode)
+          this.$router.push({
+            name: 'Detail',
+            params: {
+              headOfficeCode: this.selectedBranchDetails.headOfficeCode,
+              branchOfficeCode: this.selectedBranchDetails.branchOfficeCode,
+              headOffice: this.selectedBranchDetails.headOffice,
+              branchOffice: this.selectedBranchDetails.branchOffice,
+            }
+          });
         })
         .catch(error => {
           console.error("沒有抓到詳細資料", error);

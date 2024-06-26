@@ -9,6 +9,8 @@
 </template>
 
 <script setup>
+    
     import Select from './components/Select.vue';
+    import { RouterLink, RouterView } from 'vue-router';
 </script>
 

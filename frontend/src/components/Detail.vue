@@ -52,7 +52,6 @@ export default {
         },500)
       });
     },
-    
     resetSearch() {
       this.$emit('resetSearch');
     },
