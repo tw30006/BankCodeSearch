@@ -15,7 +15,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["yuhsuan.zeabur.app"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
