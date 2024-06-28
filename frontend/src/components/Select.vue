@@ -4,13 +4,16 @@
             <label>銀行名稱</label>
             <div class="relative w-[16rem]">
               <div class="flex w-full items-center justify-between rounded bg-white p-2 ring-1 ring-gray-300">
-                <input v-model="search" @click="toggleHeadOffice(true)" @focus="openHeadOffice" 
+                <input v-model="search" @click="toggleHeadOffice" @focus="openHeadOffice" 
                 @input="filterHeadOffices" 
                 class="w-full outline-none" 
                 placeholder="請輸入關鍵字或銀行代碼..." />
-                <font-awesome-icon :icon="['fas', 'chevron-down']" />
+                <font-awesome-icon :icon="['fas', 'chevron-down']" @click="toggleHeadOffice"/>
               </div>
                 <ul v-if="openHeadOffice" v-show="filteredHeadOffices" class="z-2 absolute mt-1 w-full rounded bg-gray-50 ring-1 ring-gray-300 max-h-60 overflow-y-auto">
+                    <li v-if="filteredHeadOffices.length === 0" class="w-full rounded bg-gray-50 text-center py-2">
+                      {{ message }}
+                    </li>
                     <li v-for="headOffice in filteredHeadOffices" :key="headOffice.id" @click="selectHeadOffice(headOffice, headOffice.headOfficeCode)" class="cursor-pointer p-2 hover:bg-gray-200">{{ headOffice.headOfficeCode }} {{ headOffice.headOffice }}</li>
                 </ul>
             </div>
@@ -57,8 +60,8 @@ export default {
     }
   },
   methods: {
-    toggleHeadOffice(state) {
-      this.openHeadOffice = state;
+    toggleHeadOffice() {
+      this.openHeadOffice = !this.openHeadOffice;
     },
     toggleBranch() {
       this.openBranch = !this.openBranch;
@@ -80,6 +83,9 @@ export default {
           h.headOfficeCode.includes(this.search)
         );
       });
+      if(this.filteredHeadOffices.length === 0){
+        return this.message = "無相關資料"
+      }
     },
     selectHeadOffice(headOffice, headOfficeCode) {
       this.selectedHeadOffice = headOffice;
