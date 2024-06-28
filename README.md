@@ -1,29 +1,24 @@
-# BankCodeSearch
+# 台灣銀行代碼查詢
 
-This template should help get you started developing with Vue 3 in Vite.
+台灣銀行代碼查詢是一個用於查詢台灣各家銀行總行及分行代碼的應用功能。
+前端使用vue、後端使用django的來開發。
 
-## Recommended IDE Setup
+#點擊進入網站
+https://banksearch.zeabur.app/
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+# 功能
+- 下拉選單，選取銀行
+- 提供關鍵字搜尋，銀行代碼或是銀行名稱
+- 可以複製銀行代碼
+- 可以複製此頁面的連結
+- 提供重新搜尋
 
-## Customize configuration
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## 技術使用
 
-## Project Setup
+- 前端：TailwindCSS, Vue, Vite, Vue-Router, Axios
+- 後端：Python, Django, pandas
+- 資料庫：SQLite
+- 版本控制：Git
+- 部署：Zeabur
 
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
