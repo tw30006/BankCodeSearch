@@ -56,14 +56,13 @@ export default {
       this.$emit('resetSearch');
     },
     copyLink() {
-      navigator.clipboard.writeText(window.location.href)
+      const url = decodeURI(window.location.href)
+      navigator.clipboard.writeText(url)
       .then(() => {
         this.linkButton = '已複製';
-        console.log(this.isCopied);
         setTimeout(()=>{
             this.linkButton = '複製此頁面連結';
         },500)
-        console.log(window.location.href);
       });
     }
   }

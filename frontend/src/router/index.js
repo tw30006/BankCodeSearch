@@ -7,8 +7,7 @@ const router = createRouter({
     {
       path: '/:headOfficeCode/:branchOfficeCode/:headOffice-:branchOffice.html',
       name: 'Detail',
-    //   component: Detail,
-      component: () => import('../components/Detail.vue'),
+      component: Detail,
       props: true
     }
   ]

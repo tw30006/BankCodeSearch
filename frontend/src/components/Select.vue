@@ -68,7 +68,6 @@ export default {
         .then(response => {
           this.headOffices = response.data;
           this.filteredHeadOffices = response.data;
-          console.log(this.headOffices);
         })
         .catch(error => {
           console.error("沒有抓到總行", error);
@@ -97,7 +96,6 @@ export default {
       })
         .then(response => {
           this.branches = response.data;
-          console.log(this.branches);
         })
         .catch(error => {
           console.error("沒有抓到分行", error);
@@ -112,8 +110,6 @@ export default {
       axios.get(`http://localhost:8000/api/v1/banks/detail/${branchId}/`)
         .then(response => {
           this.selectedBranchDetails = response.data;
-          console.log(this.selectedBranchDetails);
-          console.log(this.selectedBranchDetails.headOfficeCode)
           this.$router.push({
             name: 'Detail',
             params: {
@@ -137,6 +133,7 @@ export default {
       this.fetchHeadOffices();
       this.filterHeadOffices();
       this.search ="";
+      this.$router.push({ path: '/' });
     }
   },
   mounted() {
