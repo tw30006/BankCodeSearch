@@ -68,11 +68,9 @@ export default {
     },
     fetchHeadOffices() {
       const apiUrl = import.meta.env.VITE_API_URL;
-      console.log(apiUrl)
       axios.get(`${apiUrl}api/v1/banks/head_offices/`)
         .then(response => {
           this.headOffices = response.data;
-          console.log(this.headOffices)
           this.filteredHeadOffices = response.data;
         })
         .catch(error => {
