@@ -67,7 +67,7 @@ export default {
       this.openBranch = !this.openBranch;
     },
     fetchHeadOffices() {
-      axios.get('http://localhost:8000/api/v1/banks/head_offices/')
+      axios.get('https://banksearch.zeabur.app/api/v1/banks/head_offices/')
         .then(response => {
           this.headOffices = response.data;
           this.filteredHeadOffices = response.data;
@@ -95,7 +95,7 @@ export default {
       this.fetchBranches();
     },
     fetchBranches() {
-      axios.get('http://localhost:8000/api/v1/banks/branches/', {
+      axios.get('https://banksearch.zeabur.app/api/v1/banks/branches/', {
         params: {
           head_office: this.selectedHeadOffice.headOffice
         }
@@ -113,7 +113,7 @@ export default {
       this.fetchBranchDetails(branch.id);
     },
     fetchBranchDetails(branchId) {
-      axios.get(`http://localhost:8000/api/v1/banks/detail/${branchId}/`)
+      axios.get(`https://banksearch.zeabur.app/api/v1/banks/detail/${branchId}/`)
         .then(response => {
           this.selectedBranchDetails = response.data;
           this.$router.push({
