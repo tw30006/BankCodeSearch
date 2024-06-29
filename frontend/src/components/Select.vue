@@ -68,9 +68,11 @@ export default {
     },
     fetchHeadOffices() {
       const apiUrl = import.meta.env.VITE_API_URL;
-      axios.get(`${apiUrl}/api/v1/banks/head_offices/`)
+      console.log(apiUrl)
+      axios.get(`${apiUrl}api/v1/banks/head_offices/`)
         .then(response => {
           this.headOffices = response.data;
+          console.log(this.headOffices)
           this.filteredHeadOffices = response.data;
         })
         .catch(error => {
@@ -97,7 +99,7 @@ export default {
     },
     fetchBranches() {
       const apiUrl = import.meta.env.VITE_API_URL;
-      axios.get(`${apiUrl}/api/v1/banks/branches/`, {
+      axios.get(`${apiUrl}api/v1/banks/branches/`, {
         params: {
           head_office: this.selectedHeadOffice.headOffice
         }
@@ -116,7 +118,7 @@ export default {
     },
     fetchBranchDetails(branchId) {
       const apiUrl = import.meta.env.VITE_API_URL;
-      axios.get(`${apiUrl}/api/v1/banks/detail/${branchId}/`)
+      axios.get(`${apiUrl}api/v1/banks/detail/${branchId}/`)
         .then(response => {
           this.selectedBranchDetails = response.data;
           this.$router.push({
