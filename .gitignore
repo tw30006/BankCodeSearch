@@ -33,4 +33,5 @@ coverage
 db.sqlite3
 **/__pycache__
 .env
-
+.env.development
+.env.production
