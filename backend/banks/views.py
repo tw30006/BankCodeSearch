@@ -46,13 +46,13 @@ def get_head_offices(request):
 @require_GET
 def get_branches(request):
     head_office = request.GET.get('head_office')
-    branches = Bank.objects.filter(headOffice=head_office).exclude(branchOffice="").values('id', 'branchOffice')
+    branches = Bank.objects.filter(headOffice=head_office).exclude(branchOffice="").values('branchOffice', 'branchOfficeCode')
     return JsonResponse(list(branches), safe=False)
 
 @require_GET
 def detail(request, pk):
     try:
-        branch = Bank.objects.get(id=pk)
+        branch = Bank.objects.get(branchOfficeCode=pk)
         data = {
             'headOffice': branch.headOffice,
             'headOfficeCode': branch.headOfficeCode,

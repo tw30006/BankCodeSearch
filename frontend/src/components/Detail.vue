@@ -35,6 +35,7 @@ export default {
       default: () => ({})
     }
   },
+  emits: ['resetSearch'],
   data() {
     return {
         codeButton: '複製代碼',

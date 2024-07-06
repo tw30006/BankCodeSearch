@@ -111,14 +111,17 @@ export default {
     },
     selectBranch(branch) {
       this.selectedBranch = branch;
+      console.log(branch)
       this.openBranch = false;
-      this.fetchBranchDetails(branch.id);
+      this.fetchBranchDetails(branch.branchOfficeCode);
+      console.log(branch.branchOfficeCode)
     },
-    fetchBranchDetails(branchId) {
+    fetchBranchDetails(branchOfficeCode) {
       const apiUrl = import.meta.env.VITE_API_URL;
-      axios.get(`${apiUrl}api/v1/banks/detail/${branchId}/`)
+      axios.get(`${apiUrl}api/v1/banks/detail/${branchOfficeCode}/`)
         .then(response => {
           this.selectedBranchDetails = response.data;
+          console.log(this.selectedBranchDetails)
           this.$router.push({
             name: 'Detail',
             params: {
@@ -128,6 +131,7 @@ export default {
               branchOffice: this.selectedBranchDetails.branchOffice,
             }
           });
+          console.log(this.$router)
         })
         .catch(error => {
           console.error("沒有抓到詳細資料", error);
