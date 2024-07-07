@@ -32,13 +32,14 @@
             </div>
         </section>
     </div>
-    <section v-if="selectedBranchDetails">
-        <Detail :branch="selectedBranchDetails" @resetSearch="resetSearch"/>
-    </section>
+    <router-view :branch="selectedBranchDetails" @resetSearch="resetSearch"></router-view>
 </template>
 
 
 <script>
+import { ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
 import axios from 'axios';
 import Detail from './Detail.vue';
 
@@ -46,111 +47,167 @@ export default {
   components: {
     Detail  
   },
-  data() {
-    return {
-      openHeadOffice: false,
-      openBranch: false,
-      headOffices: [],
-      branches: [],
-      selectedHeadOffice: null,
-      selectedBranch: null,
-      selectedBranchDetails: null,
-      filteredHeadOffices: [],
-      search: '',
-    }
-  },
-  methods: {
-    toggleHeadOffice() {
-      this.openHeadOffice = !this.openHeadOffice;
-    },
-    toggleBranch() {
-      this.openBranch = !this.openBranch;
-    },
-    fetchHeadOffices() {
+  setup(){
+    const route = useRoute();
+    const router = useRouter();
+    const search = ref('');
+    const openHeadOffice = ref(false);
+    const openBranch = ref(false);
+    const headOffices = ref([]);
+    const branches = ref([]);
+    const selectedHeadOffice = ref(null);
+    const selectedHeadOfficeCode = ref(null);
+    const selectedBranch = ref(null);
+    const selectedBranchDetails = ref(null);
+    const filteredHeadOffices = ref([]);
+    const message = ref('');
+
+
+    const toggleHeadOffice = () => {
+      openHeadOffice.value = !openHeadOffice.value;
+    };
+
+    const toggleBranch = () => {
+      openBranch.value = !openBranch.value;
+    };
+
+    const fetchHeadOffices = async () => {
       const apiUrl = import.meta.env.VITE_API_URL;
-      axios.get(`${apiUrl}api/v1/banks/head_offices/`)
-        .then(response => {
-          this.headOffices = response.data;
-          this.filteredHeadOffices = response.data;
-        })
-        .catch(error => {
-          console.error("沒有抓到總行", error);
-        });
-    },
-    filterHeadOffices() {
-      this.filteredHeadOffices = this.headOffices.filter((h) => {
+      try {
+        const response = await axios.get(`${apiUrl}api/v1/banks/head_offices/`);
+        headOffices.value = response.data;
+        filteredHeadOffices.value = response.data;
+        if (route.params.headOfficeCode) {
+          getCodeOfficesFromRoute();
+        }
+      } catch (error) {
+        console.error("沒有抓到總行", error);
+      }
+    };
+
+    const filterHeadOffices = () => {
+      filteredHeadOffices.value = headOffices.value.filter((h) => {
         return (
-          h.headOffice.includes(this.search) ||
-          h.headOfficeCode.includes(this.search)
+          h.headOffice.includes(search.value) ||
+          h.headOfficeCode.includes(search.value)
         );
       });
-      if(this.filteredHeadOffices.length === 0){
-        return this.message = "無相關資料"
+      if(filteredHeadOffices.value.length === 0){
+        return message.value = "無相關資料"
       }
-    },
-    selectHeadOffice(headOffice, headOfficeCode) {
-      this.selectedHeadOffice = headOffice;
-      this.selectedHeadOfficeCode = headOfficeCode;
-      this.search = `${headOffice.headOfficeCode} ${headOffice.headOffice}`;
-      this.openHeadOffice = false;
-      this.fetchBranches();
-    },
-    fetchBranches() {
+    };
+    const selectHeadOffice = (headOffice, headOfficeCode) => {
+      selectedHeadOffice.value = headOffice;
+      selectedHeadOfficeCode.value = headOfficeCode;
+      search.value = `${headOffice.headOfficeCode} ${headOffice.headOffice}`;
+      openHeadOffice.value = false;
+      fetchBranches(headOffice.headOfficeCode);
+    };
+
+    const fetchBranches = async () => {
       const apiUrl = import.meta.env.VITE_API_URL;
-      axios.get(`${apiUrl}api/v1/banks/branches/`, {
-        params: {
-          head_office: this.selectedHeadOffice.headOffice
-        }
-      })
-        .then(response => {
-          this.branches = response.data;
-        })
-        .catch(error => {
-          console.error("沒有抓到分行", error);
-        });
-    },
-    selectBranch(branch) {
-      this.selectedBranch = branch;
-      console.log(branch)
-      this.openBranch = false;
-      this.fetchBranchDetails(branch.branchOfficeCode);
-      console.log(branch.branchOfficeCode)
-    },
-    fetchBranchDetails(branchOfficeCode) {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      axios.get(`${apiUrl}api/v1/banks/detail/${branchOfficeCode}/`)
-        .then(response => {
-          this.selectedBranchDetails = response.data;
-          console.log(this.selectedBranchDetails)
-          this.$router.push({
-            name: 'Detail',
+      if (selectedHeadOffice.value) {
+        try {
+          const response = await axios.get(`${apiUrl}api/v1/banks/branches/`, {
             params: {
-              headOfficeCode: this.selectedBranchDetails.headOfficeCode,
-              branchOfficeCode: this.selectedBranchDetails.branchOfficeCode,
-              headOffice: this.selectedBranchDetails.headOffice,
-              branchOffice: this.selectedBranchDetails.branchOffice,
+              head_office: selectedHeadOffice.value.headOffice
             }
           });
-          console.log(this.$router)
-        })
-        .catch(error => {
-          console.error("沒有抓到詳細資料", error);
+          branches.value = response.data;
+          if (route.params.branchOfficeCode) {
+            getBranchFromRoute();
+          }
+        } catch (error) {
+          console.error("沒有抓到分行", error);
+        }
+      }
+    };
+
+    const selectBranch = (branch) => {
+      selectedBranch.value = branch;
+      openBranch.value = false;
+      fetchBranchDetails(branch.branchOfficeCode);
+    };
+
+    const fetchBranchDetails = async (branchOfficeCode) => {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      try {
+        const response = await axios.get(`${apiUrl}api/v1/banks/detail/${branchOfficeCode}/`);
+        selectedBranchDetails.value = response.data;
+        router.push({
+          name: 'Detail',
+          params: {
+            headOfficeCode: selectedBranchDetails.value.headOfficeCode,
+            branchOfficeCode: selectedBranchDetails.value.branchOfficeCode,
+            headOffice: selectedBranchDetails.value.headOffice,
+            branchOffice: selectedBranchDetails.value.branchOffice,
+          }
         });
-    },
-    resetSearch() {
-      this.selectedHeadOffice = null;
-      this.selectedBranch = null;
-      this.selectedBranchDetails = null;
-      this.headOffices = [];
-      this.branches = [];
-      this.fetchHeadOffices();
-      this.filterHeadOffices();
-      this.search ="";
-      this.$router.push({ path: '/' });
-    }
+      } catch (error) {
+        console.error("沒有抓到詳細資料", error);
+      }
+    };
+
+    const resetSearch = () => {
+      selectedHeadOffice.value = null;
+      selectedBranch.value = null;
+      selectedBranchDetails.value = null;
+      headOffices.value = [];
+      branches.value = [];
+      search.value = "";
+      router.push({ path: '/' });
+
+    };
+
+    const getCodeOfficesFromRoute = () => {
+      const { headOfficeCode, branchOfficeCode, headOffice } = route.params;
+      if (headOfficeCode) {
+        selectedHeadOffice.value = headOffices.value.find(h => 
+        h.headOfficeCode === headOfficeCode);
+        if (selectedHeadOffice.value && branchOfficeCode) {
+          fetchBranches(headOfficeCode);
+        }
+      }
+    };
+    
+    const getBranchFromRoute = () => {
+      const { branchOfficeCode } = route.params;
+      if (branchOfficeCode) {
+        selectedBranch.value = branches.value.find(b => b.branchOfficeCode === branchOfficeCode);
+      }
+    };
+
+    onMounted(() => {
+      fetchHeadOffices();
+    });
+
+    watch(() => route.params, (newParams) => {
+      if (newParams.headOfficeCode) {
+        getCodeOfficesFromRoute();
+      }
+      if (newParams.branchOfficeCode) {
+        getBranchFromRoute();
+      }
+    });
+
+    return {
+      search,
+      openHeadOffice,
+      openBranch,
+      headOffices,
+      branches,
+      selectedHeadOffice,
+      selectedBranch,
+      selectedBranchDetails,
+      filterHeadOffices,
+      toggleHeadOffice,
+      filteredHeadOffices,
+      selectHeadOffice,
+      toggleBranch,
+      selectBranch,
+      resetSearch,
+      message,
+    };
   },
-  mounted() {
-    this.fetchHeadOffices();
-  }
 };
 </script>
