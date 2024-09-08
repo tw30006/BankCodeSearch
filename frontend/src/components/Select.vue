@@ -166,6 +166,7 @@ export default {
         h.headOfficeCode === headOfficeCode);
         if (selectedHeadOffice.value && branchOfficeCode) {
           fetchBranches(headOfficeCode);
+          search.value = `${selectedHeadOffice.value.headOffice} ${selectedHeadOffice.value.headOfficeCode}`;
         }
       }
     };
@@ -179,15 +180,6 @@ export default {
 
     onMounted(() => {
       fetchHeadOffices();
-    });
-
-    watch(() => route.params, (newParams) => {
-      if (newParams.headOfficeCode) {
-        getCodeOfficesFromRoute();
-      }
-      if (newParams.branchOfficeCode) {
-        getBranchFromRoute();
-      }
     });
 
     return {
